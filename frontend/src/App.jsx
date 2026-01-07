@@ -10,8 +10,7 @@ function App() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-2 sm:space-x-3">
-              <img src="/images/L2p-red-loog.png" alt="L2P Logo" className="h-8 w-8 sm:h-10 sm:w-10" />
-              <h1 className="text-lg sm:text-xl font-bold">L2P Control</h1>
+              <h1 className="text-lg sm:text-xl font-bold">🎮 L2P Control</h1>
             </div>
             <div className="flex space-x-1 sm:space-x-2 md:space-x-4">
               <NavLink
