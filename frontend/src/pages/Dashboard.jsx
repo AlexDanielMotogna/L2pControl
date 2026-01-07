@@ -16,6 +16,11 @@ function Dashboard() {
   const { data: pcs, isLoading, error } = useQuery({
     queryKey: ['pcs'],
     queryFn: getPCs,
+    refetchInterval: 5000,
+    staleTime: 3000,
+    retry: 2,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: true,
   })
 
   const updateMutation = useMutation({

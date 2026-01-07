@@ -25,6 +25,11 @@ function Sessions() {
   const { data: sessions, isLoading, error } = useQuery({
     queryKey: ['sessions', filters],
     queryFn: () => getSessions(filters),
+    refetchInterval: 5000,
+    staleTime: 3000,
+    retry: 2,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: true,
   })
 
   const updateMutation = useMutation({
