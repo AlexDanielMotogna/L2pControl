@@ -228,7 +228,7 @@ function Sessions() {
                     )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
-                    {session.amountPaid ? `$${session.amountPaid.toFixed(2)}` : '—'}
+                    {session.amountPaid ? `€${session.amountPaid.toFixed(2)}` : '—'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <PaymentBadge status={session.paidStatus} />
@@ -279,7 +279,7 @@ function Sessions() {
               type="text"
               value={editForm.userName}
               onChange={(e) => setEditForm(prev => ({ ...prev, userName: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
               placeholder="Enter user name"
             />
           </div>
@@ -292,7 +292,7 @@ function Sessions() {
               step="0.01"
               value={editForm.amountPaid}
               onChange={(e) => setEditForm(prev => ({ ...prev, amountPaid: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
               placeholder="0.00"
             />
           </div>
@@ -303,7 +303,7 @@ function Sessions() {
             <textarea
               value={editForm.notes}
               onChange={(e) => setEditForm(prev => ({ ...prev, notes: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
               rows={3}
               placeholder="Add notes..."
             />
