@@ -1,12 +1,23 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import os
+import logging
 
 from .database import engine, Base
 from .routers import events, pcs, sessions
 
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 # Create tables
-Base.metadata.create_all(bind=engine)
+logger.info("Initializing database tables...")
+try:
+    Base.metadata.create_all(bind=engine)
+    logger.info("Database tables created successfully")
+except Exception as e:
+    logger.error(f"Failed to create database tables: {e}")
+    raise
 
 app = FastAPI(title="L2pControl API", version="1.0.0")
 

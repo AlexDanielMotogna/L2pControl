@@ -30,6 +30,9 @@ class L2pControlService(win32serviceutil.ServiceFramework):
     _svc_display_name_ = "L2pControl Client Service"
     _svc_description_ = "Sends PC status events to L2pControl server"
 
+    # Specify permanent installation path
+    _svc_reg_class_ = r"C:\Program Files\L2pControl\service.L2pControlService"
+
     # Configure service to start automatically
     _exe_name_ = "pythonservice.exe"
     _svc_deps_ = None  # No dependencies
