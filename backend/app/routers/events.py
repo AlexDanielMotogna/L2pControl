@@ -70,6 +70,22 @@ def handle_event(event: EventCreate, db: DBSession = Depends(get_db)):
         elif event.type == "heartbeat":
             pc.status = PCStatus.ONLINE
 
+            # Auto-create session if PC is online but has no active session
+            open_session = db.query(Session).filter(
+                Session.pcId == event.pcId,
+                Session.endAt.is_(None)
+            ).first()
+
+            if not open_session:
+                # No active session exists - create one automatically
+                logger.info(f"Auto-creating session for {event.pcId} (heartbeat received without active session)")
+                new_session = Session(
+                    pcId=event.pcId,
+                    startAt=timestamp,
+                    paidStatus=PaidStatus.UNPAID
+                )
+                db.add(new_session)
+
         elif event.type == "stop":
             pc.status = PCStatus.OFFLINE
 
