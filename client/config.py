@@ -7,7 +7,7 @@ CONFIG_FILE = os.path.join(os.path.dirname(__file__), "client_config.json")
 
 # Default values (development)
 DEFAULT_API_URL = "http://localhost:8000/api/events"
-DEFAULT_HEARTBEAT_INTERVAL = 60
+DEFAULT_HEARTBEAT_INTERVAL = 30
 
 
 def load_config():
