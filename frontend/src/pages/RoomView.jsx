@@ -2,13 +2,14 @@ import { useQuery } from "@tanstack/react-query";
 import { getPCs } from "../api/client";
 import { Monitor, User, Clock } from "lucide-react";
 import SessionTimer from "../components/SessionTimer";
+import { useWebSocket } from "../hooks/useWebSocket";
 
 function RoomView() {
+  const { isConnected } = useWebSocket();
+
   const { data: pcs, isLoading, error } = useQuery({
     queryKey: ["pcs"],
     queryFn: getPCs,
-    refetchInterval: 5000, // Refresh every 5 seconds
-    staleTime: 3000, // Consider data fresh for 3 seconds
     retry: 2, // Retry failed requests 2 times
     refetchOnWindowFocus: false, // Don't refetch on window focus
     refetchOnReconnect: true, // Refetch when network reconnects
@@ -138,7 +139,10 @@ function RoomView() {
         <h1 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-white mb-2 sm:mb-4">
           L2P ESPORTS ROOM
         </h1>
-        <p className="text-gray-300 text-sm sm:text-base lg:text-lg">Real-time Gaming Center View</p>
+        <p className="text-gray-300 text-sm sm:text-base lg:text-lg">
+          Real-time Gaming Center View
+          {isConnected && <span className="ml-2 text-green-400">● Live</span>}
+        </p>
 
         {/* Stats */}
         <div className="flex justify-center gap-4 sm:gap-8 mt-4 sm:mt-6">

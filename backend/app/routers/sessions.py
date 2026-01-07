@@ -2,12 +2,17 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session as DBSession
 from datetime import datetime, date
 from typing import List, Optional
+import asyncio
+import logging
 
 from ..database import get_db
 from ..models import Session, PaidStatus
 from ..schemas import SessionBase, SessionUpdate
+from ..services.websocket_manager import manager
+from .websocket import get_pcs_with_sessions
 
 router = APIRouter(prefix="/api", tags=["sessions"])
+logger = logging.getLogger(__name__)
 
 
 @router.get("/sessions", response_model=List[SessionBase])
@@ -62,6 +67,16 @@ def update_session(
     db.commit()
     db.refresh(session)
 
+    # Broadcast update to all WebSocket clients
+    try:
+        pcs = get_pcs_with_sessions(db)
+        asyncio.create_task(manager.broadcast({
+            "type": "update",
+            "data": [pc.model_dump() for pc in pcs]
+        }))
+    except Exception as e:
+        logger.error(f"Failed to broadcast WebSocket update: {e}")
+
     return session
 
 
@@ -85,5 +100,15 @@ def close_session(
 
     db.commit()
     db.refresh(session)
+
+    # Broadcast update to all WebSocket clients
+    try:
+        pcs = get_pcs_with_sessions(db)
+        asyncio.create_task(manager.broadcast({
+            "type": "update",
+            "data": [pc.model_dump() for pc in pcs]
+        }))
+    except Exception as e:
+        logger.error(f"Failed to broadcast WebSocket update: {e}")
 
     return session

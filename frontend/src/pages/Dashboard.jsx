@@ -6,8 +6,10 @@ import PaymentBadge from '../components/PaymentBadge'
 import SessionTimer from '../components/SessionTimer'
 import Modal from '../components/Modal'
 import { format } from 'date-fns'
+import { useWebSocket } from '../hooks/useWebSocket'
 
 function Dashboard() {
+  const { isConnected } = useWebSocket()
   const queryClient = useQueryClient()
   const [editModal, setEditModal] = useState({ open: false, session: null })
   const [userName, setUserName] = useState('')
@@ -16,8 +18,6 @@ function Dashboard() {
   const { data: pcs, isLoading, error } = useQuery({
     queryKey: ['pcs'],
     queryFn: getPCs,
-    refetchInterval: 5000,
-    staleTime: 3000,
     retry: 2,
     refetchOnWindowFocus: false,
     refetchOnReconnect: true,
