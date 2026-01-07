@@ -40,6 +40,13 @@ if %errorLevel% neq 0 (
 )
 
 echo.
+echo [3.5/4] Configuring service to start automatically...
+sc config L2pControlClient start= auto
+if %errorLevel% neq 0 (
+    echo WARNING: Failed to set automatic start (service may already be configured)
+)
+
+echo.
 echo [4/4] Starting service...
 python service.py start
 if %errorLevel% neq 0 (

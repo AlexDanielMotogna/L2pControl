@@ -30,6 +30,11 @@ class L2pControlService(win32serviceutil.ServiceFramework):
     _svc_display_name_ = "L2pControl Client Service"
     _svc_description_ = "Sends PC status events to L2pControl server"
 
+    # Configure service to start automatically
+    _exe_name_ = "pythonservice.exe"
+    _svc_deps_ = None  # No dependencies
+    _exe_args_ = None
+
     def __init__(self, args):
         win32serviceutil.ServiceFramework.__init__(self, args)
         self.stop_event = win32event.CreateEvent(None, 0, 0, None)

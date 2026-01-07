@@ -10,6 +10,8 @@ function RoomView() {
     refetchInterval: 5000, // Refresh every 5 seconds
     staleTime: 3000, // Consider data fresh for 3 seconds
     retry: 2, // Retry failed requests 2 times
+    refetchOnWindowFocus: false, // Don't refetch on window focus
+    refetchOnReconnect: true, // Refetch when network reconnects
   });
 
   if (isLoading) {
