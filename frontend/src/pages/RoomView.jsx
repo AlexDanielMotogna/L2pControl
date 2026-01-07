@@ -65,8 +65,8 @@ function RoomView() {
       );
     }
 
-    const isOccupied = pc.status === "ONLINE" && pc.activeSession;
     const isOnline = pc.status === "ONLINE";
+    const hasActiveSession = pc.activeSession;
 
     return (
       <div className="relative group max-w-[200px] mx-auto">
@@ -75,7 +75,7 @@ function RoomView() {
           className={`
             relative w-full aspect-[4/3] rounded border transition-all duration-300
             ${
-              isOccupied
+              isOnline
                 ? "border-green-500 bg-green-900/20 shadow shadow-green-500/50"
                 : "border-red-500 bg-red-900/20 shadow shadow-red-500/50"
             }
@@ -86,7 +86,7 @@ function RoomView() {
             <Monitor
               className={`
                 w-3 h-3
-                ${isOccupied ? "text-green-400" : "text-red-400"}
+                ${isOnline ? "text-green-400" : "text-red-400"}
               `}
               strokeWidth={1.5}
             />
@@ -97,7 +97,7 @@ function RoomView() {
             <div
               className={`
                 w-1 h-1 rounded-full animate-pulse
-                ${isOccupied ? "bg-green-500" : "bg-red-500"}
+                ${isOnline ? "bg-green-500" : "bg-red-500"}
               `}
             />
           </div>
@@ -111,14 +111,14 @@ function RoomView() {
           <div
             className={`
             inline-block px-1.5 py-0.5 rounded-full text-[10px] font-semibold mb-0.5
-            ${isOccupied ? "bg-green-500 text-white" : "bg-red-500 text-white"}
+            ${isOnline ? "bg-green-500 text-white" : "bg-red-500 text-white"}
           `}
           >
-            {isOccupied ? "ONLINE" : "OFFLINE"}
+            {isOnline ? "ONLINE" : "OFFLINE"}
           </div>
 
           {/* Session Info */}
-          {isOccupied && pc.activeSession && (
+          {hasActiveSession && (
             <div className="mt-1 bg-gray-800/80 backdrop-blur rounded p-1 text-left space-y-0.5">
               <div className="flex items-center text-gray-300 text-[10px]">
                 <User className="w-2 h-2 mr-0.5" />
@@ -150,16 +150,13 @@ function RoomView() {
         <div className="flex justify-center gap-4 sm:gap-8 mt-4 sm:mt-6">
           <div className="bg-gray-800/50 backdrop-blur rounded-lg px-4 sm:px-6 py-2 sm:py-3">
             <div className="text-2xl sm:text-3xl font-bold text-green-400">
-              {pcs?.filter((pc) => pc.status === "ONLINE" && pc.activeSession)
-                .length || 0}
+              {pcs?.filter((pc) => pc.status === "ONLINE").length || 0}
             </div>
             <div className="text-gray-400 text-xs sm:text-sm">Online</div>
           </div>
           <div className="bg-gray-800/50 backdrop-blur rounded-lg px-4 sm:px-6 py-2 sm:py-3">
             <div className="text-2xl sm:text-3xl font-bold text-red-400">
-              {10 -
-                (pcs?.filter((pc) => pc.status === "ONLINE" && pc.activeSession)
-                  .length || 0)}
+              {10 - (pcs?.filter((pc) => pc.status === "ONLINE").length || 0)}
             </div>
             <div className="text-gray-400 text-xs sm:text-sm">Offline</div>
           </div>
@@ -212,7 +209,7 @@ function RoomView() {
               <div className="w-6 h-6 bg-green-500 rounded-full mx-auto mb-2 animate-pulse" />
               <div className="text-green-400 font-semibold">GREEN</div>
               <div className="text-gray-400 text-sm">
-                PC Online with Session
+                PC Online
               </div>
             </div>
             <div>
