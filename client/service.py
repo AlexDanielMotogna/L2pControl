@@ -87,8 +87,25 @@ class L2pControlService(win32serviceutil.ServiceFramework):
 
     def main(self):
         """Main service loop"""
-        # Send start event
-        self.send_event("start")
+        # Send start event with retry logic
+        max_retries = 10
+        retry_delay = 5  # seconds
+
+        for attempt in range(max_retries):
+            if self.send_event("start"):
+                break  # Success, exit retry loop
+            else:
+                if attempt < max_retries - 1:
+                    servicemanager.LogWarningMsg(
+                        f"Failed to send start event (attempt {attempt + 1}/{max_retries}), "
+                        f"retrying in {retry_delay} seconds..."
+                    )
+                    import time
+                    time.sleep(retry_delay)
+                else:
+                    servicemanager.LogErrorMsg(
+                        f"Failed to send start event after {max_retries} attempts"
+                    )
 
         # Main loop - send heartbeats
         while self.running:
