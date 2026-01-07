@@ -4,16 +4,26 @@ import { Monitor, User, Clock } from "lucide-react";
 import SessionTimer from "../components/SessionTimer";
 
 function RoomView() {
-  const { data: pcs, isLoading } = useQuery({
+  const { data: pcs, isLoading, error } = useQuery({
     queryKey: ["pcs"],
     queryFn: getPCs,
-    refetchInterval: 2000, // Refresh every 2 seconds
+    refetchInterval: 5000, // Refresh every 5 seconds
+    staleTime: 3000, // Consider data fresh for 3 seconds
+    retry: 2, // Retry failed requests 2 times
   });
 
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen bg-gradient-to-br from-gray-900 via-red-900 to-gray-900">
         <div className="text-white text-xl">Loading room...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-screen bg-gradient-to-br from-gray-900 via-red-900 to-gray-900">
+        <div className="text-white text-xl">Error loading room. Retrying...</div>
       </div>
     );
   }

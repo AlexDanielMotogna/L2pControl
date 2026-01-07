@@ -9,7 +9,7 @@ from ..schemas import PCWithSession, SessionBase
 
 router = APIRouter(prefix="/api", tags=["pcs"])
 
-OFFLINE_THRESHOLD_MINUTES = 5
+OFFLINE_THRESHOLD_MINUTES = 2
 
 
 @router.get("/pcs", response_model=List[PCWithSession])

@@ -44,6 +44,12 @@ class L2pControlService(win32serviceutil.ServiceFramework):
         self.send_event("stop")
         win32event.SetEvent(self.stop_event)
 
+    def SvcShutdown(self):
+        """Called when system is shutting down"""
+        self.running = False
+        self.send_event("stop")
+        self.SvcStop()
+
     def SvcDoRun(self):
         """Main service entry point"""
         servicemanager.LogMsg(

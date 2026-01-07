@@ -1,1 +1,4 @@
-{"clientUuid": "5d2f1e5b-fed3-443c-b956-e009cdfa198c"}
+{
+  "apiUrl": "https://l2pcontrol-production.up.railway.app/api/events",
+  "heartbeatInterval": 60
+}
