@@ -117,15 +117,9 @@ function RoomView() {
             {isOnline ? "ONLINE" : "OFFLINE"}
           </div>
 
-          {/* Session Info */}
-          {hasActiveSession && (
-            <div className="mt-1 bg-gray-800/80 backdrop-blur rounded p-1 text-left space-y-0.5">
-              <div className="flex items-center text-gray-300 text-[10px]">
-                <User className="w-2 h-2 mr-0.5" />
-                <span className="font-medium text-white truncate">
-                  {pc.activeSession.userName || "User"}
-                </span>
-              </div>
+          {/* Session Info - Show if online */}
+          {isOnline && hasActiveSession && (
+            <div className="mt-1 bg-gray-800/80 backdrop-blur rounded p-1 text-left">
               <div className="flex items-center text-gray-300 text-[10px]">
                 <Clock className="w-2 h-2 mr-0.5" />
                 <SessionTimer startAt={pc.activeSession.startAt} />
