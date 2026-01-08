@@ -35,7 +35,8 @@ function RoomView() {
   const allPCs = pcs || [];
   const leftPCs = Array(5)
     .fill(null)
-    .map((_, i) => allPCs[i] || null);
+    .map((_, i) => allPCs[i] || null)
+    .reverse(); // Reverse order: PC05, PC04, PC03, PC02, PC01
   const rightPCs = Array(5)
     .fill(null)
     .map((_, i) => allPCs[i + 5] || null);
