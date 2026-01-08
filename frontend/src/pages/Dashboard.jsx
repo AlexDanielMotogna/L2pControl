@@ -1,88 +1,74 @@
-import { useState } from 'react'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { getPCs, updateSession, closeSession, getBeverages } from '../api/client'
-import StatusBadge from '../components/StatusBadge'
-import PaymentBadge from '../components/PaymentBadge'
-import SessionTimer from '../components/SessionTimer'
-import Modal from '../components/Modal'
-import BeverageModal from '../components/BeverageModal'
-import { format } from 'date-fns'
-import { useWebSocket } from '../hooks/useWebSocket'
-import { Refrigerator } from 'lucide-react'
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  getPCs,
+  updateSession,
+  closeSession,
+  getBeverages,
+} from "../api/client";
+import StatusBadge from "../components/StatusBadge";
+import PaymentBadge from "../components/PaymentBadge";
+import SessionTimer from "../components/SessionTimer";
+import BeverageModal from "../components/BeverageModal";
+import { format } from "date-fns";
+import { useWebSocket } from "../hooks/useWebSocket";
+import { Refrigerator } from "lucide-react";
 
 function Dashboard() {
-  const { isConnected } = useWebSocket()
-  const queryClient = useQueryClient()
-  const [editModal, setEditModal] = useState({ open: false, session: null })
-  const [userName, setUserName] = useState('')
-  const [amountPaid, setAmountPaid] = useState('')
-  const [isBeverageModalOpen, setIsBeverageModalOpen] = useState(false)
+  const { isConnected } = useWebSocket();
+  const queryClient = useQueryClient();
+  const [isBeverageModalOpen, setIsBeverageModalOpen] = useState(false);
 
-  const { data: pcs, isLoading, error } = useQuery({
-    queryKey: ['pcs'],
+  const {
+    data: pcs,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["pcs"],
     queryFn: getPCs,
     retry: 2,
     refetchOnWindowFocus: false,
     refetchOnReconnect: true,
-  })
+  });
 
   const { data: beverages } = useQuery({
-    queryKey: ['beverages'],
+    queryKey: ["beverages"],
     queryFn: getBeverages,
-  })
+  });
 
   const updateMutation = useMutation({
     mutationFn: ({ sessionId, updates }) => updateSession(sessionId, updates),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['pcs'] })
-      setEditModal({ open: false, session: null })
+      queryClient.invalidateQueries({ queryKey: ["pcs"] });
     },
-  })
+  });
 
   const closeMutation = useMutation({
     mutationFn: closeSession,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['pcs'] })
+      queryClient.invalidateQueries({ queryKey: ["pcs"] });
     },
-  })
-
-  const openEditModal = (session) => {
-    setUserName(session.userName || '')
-    setAmountPaid(session.amountPaid || '')
-    setEditModal({ open: true, session })
-  }
-
-  const handleSave = () => {
-    if (!editModal.session) return
-
-    updateMutation.mutate({
-      sessionId: editModal.session.id,
-      updates: {
-        userName: userName || null,
-        amountPaid: amountPaid ? parseFloat(amountPaid) : null,
-      },
-    })
-  }
+  });
 
   const handleMarkPaid = (session) => {
     updateMutation.mutate({
       sessionId: session.id,
-      updates: { paidStatus: 'PAID' },
-    })
-  }
+      updates: { paidStatus: "PAID" },
+    });
+  };
 
   const handleCloseSession = (session) => {
-    if (confirm('Are you sure you want to close this session?')) {
-      closeMutation.mutate(session.id)
+    if (confirm("Are you sure you want to close this session?")) {
+      closeMutation.mutate(session.id);
     }
-  }
+  };
 
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="text-gray-300">Loading...</div>
       </div>
-    )
+    );
   }
 
   if (error) {
@@ -90,11 +76,11 @@ function Dashboard() {
       <div className="bg-red-900/20 border border-red-600 rounded-lg p-4 text-red-300">
         Error loading PCs: {error.message}
       </div>
-    )
+    );
   }
 
-  const onlinePCs = pcs?.filter(pc => pc.status === 'ONLINE').length || 0
-  const totalPCs = pcs?.length || 0
+  const onlinePCs = pcs?.filter((pc) => pc.status === "ONLINE").length || 0;
+  const totalPCs = pcs?.length || 0;
 
   return (
     <div>
@@ -134,7 +120,10 @@ function Dashboard() {
           </thead>
           <tbody className="bg-gray-900/30 divide-y divide-gray-700">
             {pcs?.map((pc) => (
-              <tr key={pc.id} className={pc.status === 'ONLINE' ? 'bg-green-900/20' : ''}>
+              <tr
+                key={pc.id}
+                className={pc.status === "ONLINE" ? "bg-green-900/20" : ""}
+              >
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="font-medium text-white">{pc.pcId}</div>
                 </td>
@@ -142,12 +131,12 @@ function Dashboard() {
                   <StatusBadge status={pc.status} />
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                  {format(new Date(pc.lastSeenAt), 'MMM d, HH:mm:ss')}
+                  {format(new Date(pc.lastSeenAt), "MMM d, HH:mm:ss")}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   {pc.activeSession ? (
                     <span className="text-sm text-white">
-                      {pc.activeSession.userName || '—'}
+                      {pc.activeSession.userName || "—"}
                     </span>
                   ) : (
                     <span className="text-sm text-gray-500">—</span>
@@ -170,13 +159,7 @@ function Dashboard() {
                 <td className="px-6 py-4 whitespace-nowrap text-sm space-x-2">
                   {pc.activeSession && (
                     <>
-                      <button
-                        onClick={() => openEditModal(pc.activeSession)}
-                        className="text-blue-400 hover:text-blue-300"
-                      >
-                        Edit
-                      </button>
-                      {pc.activeSession.paidStatus === 'UNPAID' && (
+                      {pc.activeSession.paidStatus === "UNPAID" && (
                         <button
                           onClick={() => handleMarkPaid(pc.activeSession)}
                           className="text-green-400 hover:text-green-300"
@@ -240,12 +223,23 @@ function Dashboard() {
             </thead>
             <tbody className="bg-gray-900/30 divide-y divide-gray-700">
               {beverages?.map((beverage) => (
-                <tr key={beverage.id} className="hover:bg-gray-800/50 transition">
+                <tr
+                  key={beverage.id}
+                  className="hover:bg-gray-800/50 transition"
+                >
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="font-medium text-white">{beverage.name}</div>
+                    <div className="font-medium text-white">
+                      {beverage.name}
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`text-sm font-medium ${beverage.quantity < 5 ? 'text-red-400' : 'text-green-400'}`}>
+                    <span
+                      className={`text-sm font-medium ${
+                        beverage.quantity < 5
+                          ? "text-red-400"
+                          : "text-green-400"
+                      }`}
+                    >
                       {beverage.quantity} units
                     </span>
                   </td>
@@ -265,7 +259,10 @@ function Dashboard() {
                   </td>
                   <td className="px-6 py-4"></td>
                   <td className="px-6 py-4 text-white text-lg">
-                    €{beverages.reduce((sum, b) => sum + (b.quantity * b.pricePerUnit), 0).toFixed(2)}
+                    €
+                    {beverages
+                      .reduce((sum, b) => sum + b.quantity * b.pricePerUnit, 0)
+                      .toFixed(2)}
                   </td>
                 </tr>
               )}
@@ -280,61 +277,12 @@ function Dashboard() {
         </div>
       </div>
 
-      <Modal
-        isOpen={editModal.open}
-        onClose={() => setEditModal({ open: false, session: null })}
-        title="Edit Session"
-      >
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              User Name
-            </label>
-            <input
-              type="text"
-              value={userName}
-              onChange={(e) => setUserName(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-              placeholder="Enter user name"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Amount Paid
-            </label>
-            <input
-              type="number"
-              step="0.01"
-              value={amountPaid}
-              onChange={(e) => setAmountPaid(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-              placeholder="0.00"
-            />
-          </div>
-          <div className="flex justify-end space-x-3 pt-4">
-            <button
-              onClick={() => setEditModal({ open: false, session: null })}
-              className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleSave}
-              disabled={updateMutation.isPending}
-              className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50"
-            >
-              {updateMutation.isPending ? 'Saving...' : 'Save'}
-            </button>
-          </div>
-        </div>
-      </Modal>
-
       <BeverageModal
         isOpen={isBeverageModalOpen}
         onClose={() => setIsBeverageModalOpen(false)}
       />
     </div>
-  )
+  );
 }
 
-export default Dashboard
+export default Dashboard;

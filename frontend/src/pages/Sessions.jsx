@@ -1,95 +1,101 @@
-import { useState } from 'react'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { getSessions, updateSession } from '../api/client'
-import PaymentBadge from '../components/PaymentBadge'
-import Modal from '../components/Modal'
-import { formatDuration } from '../components/SessionTimer'
-import { format } from 'date-fns'
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { getSessions, updateSession } from "../api/client";
+import PaymentBadge from "../components/PaymentBadge";
+import Modal from "../components/Modal";
+import { formatDuration } from "../components/SessionTimer";
+import { format } from "date-fns";
 
 function Sessions() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   const [filters, setFilters] = useState({
-    status: '',
-    pcId: '',
-    user: '',
-    dateFrom: '',
-    dateTo: '',
-  })
-  const [editModal, setEditModal] = useState({ open: false, session: null })
+    status: "",
+    pcId: "",
+    user: "",
+    dateFrom: "",
+    dateTo: "",
+  });
+  const [editModal, setEditModal] = useState({ open: false, session: null });
   const [editForm, setEditForm] = useState({
-    userName: '',
-    amountPaid: '',
-    notes: '',
-  })
+    userName: "",
+    amountPaid: "",
+    notes: "",
+  });
 
-  const { data: sessions, isLoading, error } = useQuery({
-    queryKey: ['sessions', filters],
+  const {
+    data: sessions,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["sessions", filters],
     queryFn: () => getSessions(filters),
     refetchInterval: 5000,
     staleTime: 3000,
     retry: 2,
     refetchOnWindowFocus: false,
     refetchOnReconnect: true,
-  })
+  });
 
   const updateMutation = useMutation({
     mutationFn: ({ sessionId, updates }) => updateSession(sessionId, updates),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['sessions'] })
-      setEditModal({ open: false, session: null })
+      queryClient.invalidateQueries({ queryKey: ["sessions"] });
+      setEditModal({ open: false, session: null });
     },
-  })
+  });
 
   const handleFilterChange = (field, value) => {
-    setFilters(prev => ({ ...prev, [field]: value }))
-  }
+    setFilters((prev) => ({ ...prev, [field]: value }));
+  };
 
   const openEditModal = (session) => {
     setEditForm({
-      userName: session.userName || '',
-      amountPaid: session.amountPaid || '',
-      notes: session.notes || '',
-    })
-    setEditModal({ open: true, session })
-  }
+      userName: session.userName || "",
+      amountPaid: session.amountPaid || "",
+      notes: session.notes || "",
+    });
+    setEditModal({ open: true, session });
+  };
 
   const handleSave = () => {
-    if (!editModal.session) return
+    if (!editModal.session) return;
 
     updateMutation.mutate({
       sessionId: editModal.session.id,
       updates: {
         userName: editForm.userName || null,
-        amountPaid: editForm.amountPaid ? parseFloat(editForm.amountPaid) : null,
+        amountPaid: editForm.amountPaid
+          ? parseFloat(editForm.amountPaid)
+          : null,
         notes: editForm.notes || null,
       },
-    })
-  }
+    });
+  };
 
   const handleTogglePaid = (session) => {
-    const newStatus = session.paidStatus === 'PAID' ? 'UNPAID' : 'PAID'
+    const newStatus = session.paidStatus === "PAID" ? "UNPAID" : "PAID";
     updateMutation.mutate({
       sessionId: session.id,
       updates: { paidStatus: newStatus },
-    })
-  }
+    });
+  };
 
   const clearFilters = () => {
     setFilters({
-      status: '',
-      pcId: '',
-      user: '',
-      dateFrom: '',
-      dateTo: '',
-    })
-  }
+      status: "",
+      pcId: "",
+      user: "",
+      dateFrom: "",
+      dateTo: "",
+    });
+  };
 
   if (error) {
     return (
       <div className="bg-red-900/20 border border-red-600 rounded-lg p-4 text-red-300">
         Error loading sessions: {error.message}
       </div>
-    )
+    );
   }
 
   return (
@@ -108,7 +114,7 @@ function Sessions() {
             </label>
             <select
               value={filters.status}
-              onChange={(e) => handleFilterChange('status', e.target.value)}
+              onChange={(e) => handleFilterChange("status", e.target.value)}
               className="w-full px-3 py-2 border border-gray-600 bg-gray-900/50 text-white rounded-md text-sm focus:ring-2 focus:ring-red-500"
             >
               <option value="">All</option>
@@ -123,7 +129,7 @@ function Sessions() {
             <input
               type="text"
               value={filters.pcId}
-              onChange={(e) => handleFilterChange('pcId', e.target.value)}
+              onChange={(e) => handleFilterChange("pcId", e.target.value)}
               className="w-full px-3 py-2 border border-gray-600 bg-gray-900/50 text-white rounded-md text-sm focus:ring-2 focus:ring-red-500"
               placeholder="PC-01"
             />
@@ -135,7 +141,7 @@ function Sessions() {
             <input
               type="text"
               value={filters.user}
-              onChange={(e) => handleFilterChange('user', e.target.value)}
+              onChange={(e) => handleFilterChange("user", e.target.value)}
               className="w-full px-3 py-2 border border-gray-600 bg-gray-900/50 text-white rounded-md text-sm focus:ring-2 focus:ring-red-500"
               placeholder="Search user..."
             />
@@ -147,7 +153,7 @@ function Sessions() {
             <input
               type="date"
               value={filters.dateFrom}
-              onChange={(e) => handleFilterChange('dateFrom', e.target.value)}
+              onChange={(e) => handleFilterChange("dateFrom", e.target.value)}
               className="w-full px-3 py-2 border border-gray-600 bg-gray-900/50 text-white rounded-md text-sm focus:ring-2 focus:ring-red-500 [color-scheme:dark]"
             />
           </div>
@@ -158,7 +164,7 @@ function Sessions() {
             <input
               type="date"
               value={filters.dateTo}
-              onChange={(e) => handleFilterChange('dateTo', e.target.value)}
+              onChange={(e) => handleFilterChange("dateTo", e.target.value)}
               className="w-full px-3 py-2 border border-gray-600 bg-gray-900/50 text-white rounded-md text-sm focus:ring-2 focus:ring-red-500 [color-scheme:dark]"
             />
           </div>
@@ -210,13 +216,15 @@ function Sessions() {
               {sessions?.map((session) => (
                 <tr key={session.id}>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
-                    {format(new Date(session.startAt), 'MMM d, yyyy HH:mm')}
+                    {format(new Date(session.startAt), "MMM d, yyyy HH:mm")}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="font-medium text-white">{session.pcId}</span>
+                    <span className="font-medium text-white">
+                      {session.pcId}
+                    </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
-                    {session.userName || '—'}
+                    {session.userName || "—"}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
                     {session.endAt ? (
@@ -228,7 +236,9 @@ function Sessions() {
                     )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
-                    {session.amountPaid ? `€${session.amountPaid.toFixed(2)}` : '—'}
+                    {session.amountPaid
+                      ? `€${session.amountPaid.toFixed(2)}`
+                      : "—"}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <PaymentBadge status={session.paidStatus} />
@@ -243,12 +253,14 @@ function Sessions() {
                     <button
                       onClick={() => handleTogglePaid(session)}
                       className={`${
-                        session.paidStatus === 'PAID'
-                          ? 'text-red-500 hover:text-red-400'
-                          : 'text-green-400 hover:text-green-300'
+                        session.paidStatus === "PAID"
+                          ? "text-red-500 hover:text-red-400"
+                          : "text-green-400 hover:text-green-300"
                       }`}
                     >
-                      {session.paidStatus === 'PAID' ? 'Mark Unpaid' : 'Mark Paid'}
+                      {session.paidStatus === "PAID"
+                        ? "Mark Unpaid"
+                        : "Mark Paid"}
                     </button>
                   </td>
                 </tr>
@@ -272,61 +284,67 @@ function Sessions() {
       >
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-300 mb-1">
               User Name
             </label>
             <input
               type="text"
               value={editForm.userName}
-              onChange={(e) => setEditForm(prev => ({ ...prev, userName: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+              onChange={(e) =>
+                setEditForm((prev) => ({ ...prev, userName: e.target.value }))
+              }
+              className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-red-500"
               placeholder="Enter user name"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Amount Paid
+            <label className="block text-sm font-medium text-gray-300 mb-1">
+              Amount Paid (€)
             </label>
             <input
               type="number"
               step="0.01"
               value={editForm.amountPaid}
-              onChange={(e) => setEditForm(prev => ({ ...prev, amountPaid: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+              onChange={(e) =>
+                setEditForm((prev) => ({ ...prev, amountPaid: e.target.value }))
+              }
+              className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-red-500"
               placeholder="0.00"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-300 mb-1">
               Notes
             </label>
             <textarea
               value={editForm.notes}
-              onChange={(e) => setEditForm(prev => ({ ...prev, notes: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-              rows={3}
+              onChange={(e) =>
+                setEditForm((prev) => ({ ...prev, notes: e.target.value }))
+              }
+              className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-red-500 resize-none"
+              rows={4}
               placeholder="Add notes..."
             />
           </div>
           <div className="flex justify-end space-x-3 pt-4">
             <button
               onClick={() => setEditModal({ open: false, session: null })}
-              className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+              className="px-4 py-2 text-white bg-gray-700 rounded-md hover:bg-gray-600 transition"
             >
               Cancel
             </button>
             <button
               onClick={handleSave}
               disabled={updateMutation.isPending}
-              className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50"
+              className="px-4 py-2 text-white bg-red-600 rounded-md hover:bg-red-700 disabled:opacity-50 transition"
             >
-              {updateMutation.isPending ? 'Saving...' : 'Save'}
+              {updateMutation.isPending ? "Saving..." : "Save"}
             </button>
           </div>
         </div>
       </Modal>
     </div>
-  )
+  );
 }
 
-export default Sessions
+export default Sessions;
