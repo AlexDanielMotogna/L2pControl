@@ -63,3 +63,35 @@ class PCBase(BaseModel):
 
 class PCWithSession(PCBase):
     activeSession: Optional[SessionBase] = None
+
+
+class BeverageBase(BaseModel):
+    id: int
+    name: str
+    quantity: int
+    pricePerUnit: float
+    createdAt: datetime
+    updatedAt: datetime
+
+    @field_serializer('createdAt', 'updatedAt')
+    def serialize_datetime(self, dt: Optional[datetime], _info) -> Optional[str]:
+        if dt is None:
+            return None
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt.isoformat()
+
+    class Config:
+        from_attributes = True
+
+
+class BeverageCreate(BaseModel):
+    name: str
+    quantity: int = 0
+    pricePerUnit: float
+
+
+class BeverageUpdate(BaseModel):
+    name: Optional[str] = None
+    quantity: Optional[int] = None
+    pricePerUnit: Optional[float] = None

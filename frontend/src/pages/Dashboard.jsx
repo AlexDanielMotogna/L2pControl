@@ -1,12 +1,14 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { getPCs, updateSession, closeSession } from '../api/client'
+import { getPCs, updateSession, closeSession, getBeverages } from '../api/client'
 import StatusBadge from '../components/StatusBadge'
 import PaymentBadge from '../components/PaymentBadge'
 import SessionTimer from '../components/SessionTimer'
 import Modal from '../components/Modal'
+import BeverageModal from '../components/BeverageModal'
 import { format } from 'date-fns'
 import { useWebSocket } from '../hooks/useWebSocket'
+import { Refrigerator } from 'lucide-react'
 
 function Dashboard() {
   const { isConnected } = useWebSocket()
@@ -14,6 +16,7 @@ function Dashboard() {
   const [editModal, setEditModal] = useState({ open: false, session: null })
   const [userName, setUserName] = useState('')
   const [amountPaid, setAmountPaid] = useState('')
+  const [isBeverageModalOpen, setIsBeverageModalOpen] = useState(false)
 
   const { data: pcs, isLoading, error } = useQuery({
     queryKey: ['pcs'],
@@ -21,6 +24,11 @@ function Dashboard() {
     retry: 2,
     refetchOnWindowFocus: false,
     refetchOnReconnect: true,
+  })
+
+  const { data: beverages } = useQuery({
+    queryKey: ['beverages'],
+    queryFn: getBeverages,
   })
 
   const updateMutation = useMutation({
@@ -197,6 +205,81 @@ function Dashboard() {
         )}
       </div>
 
+      {/* Beverage Inventory Section */}
+      <div className="mt-8">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <Refrigerator className="w-6 h-6 text-red-400" />
+            <h2 className="text-2xl font-bold text-white">Fridge Inventory</h2>
+          </div>
+          <button
+            onClick={() => setIsBeverageModalOpen(true)}
+            className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 font-medium transition"
+          >
+            Manage Inventory
+          </button>
+        </div>
+
+        <div className="bg-gray-800/50 backdrop-blur shadow rounded-lg overflow-hidden overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-700">
+            <thead className="bg-gray-900/50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  Beverage
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  Quantity
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  Price/Unit
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  Total Value
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-gray-900/30 divide-y divide-gray-700">
+              {beverages?.map((beverage) => (
+                <tr key={beverage.id} className="hover:bg-gray-800/50 transition">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="font-medium text-white">{beverage.name}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className={`text-sm font-medium ${beverage.quantity < 5 ? 'text-red-400' : 'text-green-400'}`}>
+                      {beverage.quantity} units
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                    €{beverage.pricePerUnit.toFixed(2)}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
+                    €{(beverage.quantity * beverage.pricePerUnit).toFixed(2)}
+                  </td>
+                </tr>
+              ))}
+              {beverages?.length > 0 && (
+                <tr className="bg-red-900/20 font-bold">
+                  <td className="px-6 py-4 text-white">TOTAL</td>
+                  <td className="px-6 py-4 text-green-400">
+                    {beverages.reduce((sum, b) => sum + b.quantity, 0)} units
+                  </td>
+                  <td className="px-6 py-4"></td>
+                  <td className="px-6 py-4 text-white text-lg">
+                    €{beverages.reduce((sum, b) => sum + (b.quantity * b.pricePerUnit), 0).toFixed(2)}
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+
+          {(!beverages || beverages.length === 0) && (
+            <div className="text-center py-12 text-gray-400">
+              No beverages in inventory. Click "Manage Inventory" to add items.
+            </div>
+          )}
+        </div>
+      </div>
+
       <Modal
         isOpen={editModal.open}
         onClose={() => setEditModal({ open: false, session: null })}
@@ -245,6 +328,11 @@ function Dashboard() {
           </div>
         </div>
       </Modal>
+
+      <BeverageModal
+        isOpen={isBeverageModalOpen}
+        onClose={() => setIsBeverageModalOpen(false)}
+      />
     </div>
   )
 }

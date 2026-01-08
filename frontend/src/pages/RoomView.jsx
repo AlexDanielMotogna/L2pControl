@@ -1,11 +1,14 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getPCs } from "../api/client";
 import { User, Clock, DoorOpen, Refrigerator, LayoutGrid } from "lucide-react";
 import SessionTimer from "../components/SessionTimer";
 import { useWebSocket } from "../hooks/useWebSocket";
+import BeverageModal from "../components/BeverageModal";
 
 function RoomView() {
   const { isConnected } = useWebSocket();
+  const [isBeverageModalOpen, setIsBeverageModalOpen] = useState(false);
 
   const { data: pcs, isLoading, error } = useQuery({
     queryKey: ["pcs"],
@@ -216,11 +219,14 @@ function RoomView() {
         {/* Counter and Fridge - Bottom */}
         <div className="grid grid-cols-2 gap-3 sm:gap-6 mt-4 sm:mt-6">
           {/* Fridge - Bottom Left */}
-          <div className="flex flex-col items-center">
-            <div className="border-2 sm:border-4 border-red-500 bg-gray-900/50 rounded-lg p-2 sm:p-3">
-              <Refrigerator className="w-8 h-8 sm:w-12 sm:h-12 text-red-400" />
+          <div
+            className="flex flex-col items-center cursor-pointer group"
+            onClick={() => setIsBeverageModalOpen(true)}
+          >
+            <div className="border-2 sm:border-4 border-red-500 bg-gray-900/50 rounded-lg p-2 sm:p-3 transition-all group-hover:bg-red-900/30 group-hover:border-red-400">
+              <Refrigerator className="w-8 h-8 sm:w-12 sm:h-12 text-red-400 group-hover:text-red-300 transition" />
             </div>
-            <div className="text-red-400 font-bold text-xs sm:text-sm text-center mt-1 sm:mt-2">FRIDGE</div>
+            <div className="text-red-400 font-bold text-xs sm:text-sm text-center mt-1 sm:mt-2 group-hover:text-red-300">FRIDGE</div>
           </div>
 
           {/* Counter - Bottom Right */}
@@ -232,6 +238,12 @@ function RoomView() {
           </div>
         </div>
       </div>
+
+      {/* Beverage Modal */}
+      <BeverageModal
+        isOpen={isBeverageModalOpen}
+        onClose={() => setIsBeverageModalOpen(false)}
+      />
     </div>
   );
 }

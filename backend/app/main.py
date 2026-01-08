@@ -4,7 +4,7 @@ import os
 import logging
 
 from .database import engine, Base
-from .routers import events, pcs, sessions, websocket, admin
+from .routers import events, pcs, sessions, websocket, admin, beverages
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -38,6 +38,7 @@ app.include_router(pcs.router)
 app.include_router(sessions.router)
 app.include_router(websocket.router)
 app.include_router(admin.router)
+app.include_router(beverages.router)
 
 
 @app.get("/")

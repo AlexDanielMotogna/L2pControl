@@ -43,3 +43,14 @@ class Session(Base):
     notes = Column(Text, nullable=True)
 
     pc = relationship("PC", back_populates="sessions")
+
+
+class Beverage(Base):
+    __tablename__ = "beverages"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(100), nullable=False)
+    quantity = Column(Integer, default=0, nullable=False)
+    pricePerUnit = Column(Float, nullable=False)
+    createdAt = Column(DateTime, default=datetime.utcnow, nullable=False)
+    updatedAt = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)

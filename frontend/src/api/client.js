@@ -34,4 +34,25 @@ export const closeSession = async (sessionId) => {
   return data
 }
 
+// Beverage API calls
+export const getBeverages = async () => {
+  const { data } = await api.get('/beverages')
+  return data
+}
+
+export const createBeverage = async (beverage) => {
+  const { data } = await api.post('/beverages', beverage)
+  return data
+}
+
+export const updateBeverage = async (beverageId, updates) => {
+  const { data } = await api.patch(`/beverages/${beverageId}`, updates)
+  return data
+}
+
+export const deleteBeverage = async (beverageId) => {
+  const { data } = await api.delete(`/beverages/${beverageId}`)
+  return data
+}
+
 export default api
