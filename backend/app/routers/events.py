@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session as DBSession
 from datetime import datetime, timezone
-import asyncio
 import logging
 
 from ..database import get_db
@@ -22,7 +21,7 @@ def normalize_timestamp(dt: datetime) -> datetime:
 
 
 @router.post("/events")
-def handle_event(event: EventCreate, db: DBSession = Depends(get_db)):
+async def handle_event(event: EventCreate, db: DBSession = Depends(get_db)):
     try:
         # Normalize timestamp for SQLite compatibility
         timestamp = normalize_timestamp(event.timestamp)
@@ -106,10 +105,10 @@ def handle_event(event: EventCreate, db: DBSession = Depends(get_db)):
         # Broadcast update to all WebSocket clients
         try:
             pcs = get_pcs_with_sessions(db)
-            asyncio.create_task(manager.broadcast({
+            await manager.broadcast({
                 "type": "update",
                 "data": [pc.model_dump() for pc in pcs]
-            }))
+            })
         except Exception as e:
             logger.error(f"Failed to broadcast WebSocket update: {e}")
 
