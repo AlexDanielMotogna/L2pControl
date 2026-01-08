@@ -62,6 +62,21 @@ function App() {
           </main>
         } />
       </Routes>
+
+      <footer className="mt-auto py-6 text-center text-gray-400 text-sm">
+        <p>
+          Developed by 2025{' '}
+          <a
+            href="https://motogna.tech"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-red-400 hover:text-red-300 transition font-medium"
+          >
+            MOTOGNA Tech Studio
+          </a>
+          {' '}· All rights reserved
+        </p>
+      </footer>
     </div>
   )
 }
