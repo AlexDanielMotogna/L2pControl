@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { getPCs } from "../api/client";
-import { Monitor, User, Clock } from "lucide-react";
+import { Monitor, User, Clock, DoorOpen, Refrigerator, LayoutGrid } from "lucide-react";
 import SessionTimer from "../components/SessionTimer";
 import { useWebSocket } from "../hooks/useWebSocket";
 
@@ -164,7 +164,17 @@ function RoomView() {
 
       {/* Room Layout */}
       <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+        {/* Entrance - Top Left */}
+        <div className="mb-4 sm:mb-6">
+          <div className="flex flex-col items-center">
+            <div className="border-2 sm:border-4 border-green-500 bg-gray-900/50 rounded-lg p-2 sm:p-3">
+              <DoorOpen className="w-8 h-8 sm:w-12 sm:h-12 text-green-400" />
+            </div>
+            <div className="text-green-400 font-bold text-xs sm:text-sm text-center mt-1 sm:mt-2">ENTRANCE</div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3 sm:gap-6 md:gap-8">
           {/* Left Side - 5 PCs */}
           <div className="space-y-2">
             <h2 className="text-base sm:text-lg font-bold text-white text-center mb-2 sm:mb-3 pb-1 border-b-2 border-red-500">
@@ -195,27 +205,23 @@ function RoomView() {
             ))}
           </div>
         </div>
-      </div>
 
-      {/* Legend */}
-      <div className="max-w-7xl mx-auto mt-6 sm:mt-12">
-        <div className="bg-gray-800/50 backdrop-blur rounded-lg p-4 sm:p-6">
-          <h3 className="text-white font-bold text-lg sm:text-xl mb-3 sm:mb-4 text-center">
-            LEGEND
-          </h3>
-          <div className="grid grid-cols-2 gap-4 sm:gap-8 text-center">
-            <div>
-              <div className="w-6 h-6 bg-green-500 rounded-full mx-auto mb-2 animate-pulse" />
-              <div className="text-green-400 font-semibold">GREEN</div>
-              <div className="text-gray-400 text-sm">
-                PC Online
-              </div>
+        {/* Counter and Fridge - Bottom */}
+        <div className="grid grid-cols-2 gap-3 sm:gap-6 mt-4 sm:mt-6">
+          {/* Fridge - Bottom Left */}
+          <div className="flex flex-col items-center">
+            <div className="border-2 sm:border-4 border-red-500 bg-gray-900/50 rounded-lg p-2 sm:p-3">
+              <Refrigerator className="w-8 h-8 sm:w-12 sm:h-12 text-red-400" />
             </div>
-            <div>
-              <div className="w-6 h-6 bg-red-500 rounded-full mx-auto mb-2 animate-pulse" />
-              <div className="text-red-400 font-semibold">RED</div>
-              <div className="text-gray-400 text-sm">PC Offline</div>
+            <div className="text-red-400 font-bold text-xs sm:text-sm text-center mt-1 sm:mt-2">FRIDGE</div>
+          </div>
+
+          {/* Counter - Bottom Right */}
+          <div className="flex flex-col items-center">
+            <div className="border-2 sm:border-4 border-yellow-500 bg-gray-900/50 rounded-lg p-2 sm:p-3">
+              <LayoutGrid className="w-8 h-8 sm:w-12 sm:h-12 text-yellow-400" />
             </div>
+            <div className="text-yellow-400 font-bold text-xs sm:text-sm text-center mt-1 sm:mt-2">COUNTER</div>
           </div>
         </div>
       </div>

@@ -29,7 +29,7 @@ def get_sessions(
         query = query.filter(Session.paidStatus == status)
 
     if pcId:
-        query = query.filter(Session.pcId == pcId)
+        query = query.filter(Session.pcId.ilike(f"%{pcId}%"))
 
     if user:
         query = query.filter(Session.userName.ilike(f"%{user}%"))
