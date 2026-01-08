@@ -1,0 +1,18 @@
+{
+  "name": "L2P Control - Gaming Center Management",
+  "short_name": "L2P Control",
+  "description": "Real-time PC monitoring and session management for L2P Esports gaming center",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a1a2e",
+  "theme_color": "#ef4444",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/images/L2p-red-loog.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
