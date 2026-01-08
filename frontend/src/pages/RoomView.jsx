@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { getPCs } from "../api/client";
-import { Monitor, User, Clock, DoorOpen, Refrigerator, LayoutGrid } from "lucide-react";
+import { User, Clock, DoorOpen, Refrigerator, LayoutGrid } from "lucide-react";
 import SessionTimer from "../components/SessionTimer";
 import { useWebSocket } from "../hooks/useWebSocket";
 
@@ -48,8 +48,12 @@ function RoomView() {
         <div className="relative group max-w-[200px] mx-auto">
           {/* PC Monitor - Empty Slot */}
           <div className="relative w-full aspect-[4/3] rounded border border-gray-600 bg-gray-900/20 transition-all duration-300">
-            <div className="absolute inset-0.5 bg-gray-900 rounded flex items-center justify-center">
-              <Monitor className="w-3 h-3 text-gray-600" strokeWidth={1.5} />
+            <div className="absolute inset-0.5 bg-gray-900 rounded flex items-center justify-center p-2">
+              <img
+                src={isRight ? "/images/PC-Right-Side.png" : "/images/PC-Left-Side.png"}
+                alt="PC"
+                className="w-full h-full object-contain opacity-30"
+              />
             </div>
             <div className="absolute top-0.5 right-0.5">
               <div className="w-1 h-1 rounded-full bg-gray-600" />
@@ -84,13 +88,16 @@ function RoomView() {
           `}
         >
           {/* Monitor Screen */}
-          <div className="absolute inset-0.5 bg-gray-900 rounded flex items-center justify-center">
-            <Monitor
-              className={`
-                w-3 h-3
-                ${isOnline ? "text-green-400" : "text-red-400"}
-              `}
-              strokeWidth={1.5}
+          <div className="absolute inset-0.5 bg-gray-900 rounded flex items-center justify-center p-2">
+            <img
+              src={isRight ? "/images/PC-Right-Side.png" : "/images/PC-Left-Side.png"}
+              alt="PC"
+              className="w-full h-full object-contain"
+              style={{
+                filter: isOnline
+                  ? "brightness(1.2) drop-shadow(0 0 8px rgba(34, 197, 94, 0.5))"
+                  : "brightness(0.6) drop-shadow(0 0 8px rgba(239, 68, 68, 0.5))"
+              }}
             />
           </div>
 
