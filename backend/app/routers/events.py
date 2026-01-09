@@ -33,15 +33,15 @@ async def handle_event(event: EventCreate, db: DBSession = Depends(get_db)):
             pc = PC(
                 pcId=event.pcId,
                 clientUuid=event.clientUuid,
-                lastSeenAt=timestamp,
+                lastSeenAt=datetime.utcnow(),
                 status=PCStatus.OFFLINE
             )
             db.add(pc)
             db.commit()
             db.refresh(pc)
 
-        # Update lastSeenAt
-        pc.lastSeenAt = timestamp
+        # Update lastSeenAt with server time (not client time) to avoid clock drift issues
+        pc.lastSeenAt = datetime.utcnow()
 
         if event.type == "start":
             pc.status = PCStatus.ONLINE
