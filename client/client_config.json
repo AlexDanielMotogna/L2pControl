@@ -1,4 +1,4 @@
 {
   "apiUrl": "https://l2pcontrol-production.up.railway.app/api/events",
-  "heartbeatInterval": 60
+  "heartbeatInterval": 30
 }

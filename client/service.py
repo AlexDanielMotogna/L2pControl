@@ -85,22 +85,41 @@ class L2pControlService(win32serviceutil.ServiceFramework):
             servicemanager.LogErrorMsg(f"Failed to send {event_type}: {str(e)}")
             return False
 
+    def check_network_connectivity(self):
+        """Check if network is available"""
+        try:
+            # Quick DNS check to Google's DNS
+            import socket
+            socket.create_connection(("8.8.8.8", 53), timeout=3)
+            return True
+        except OSError:
+            return False
+
     def main(self):
         """Main service loop"""
-        # Send start event with retry logic
-        max_retries = 10
-        retry_delay = 5  # seconds
+        # Send start event with retry logic - faster initial retries
+        max_retries = 15
 
         for attempt in range(max_retries):
+            # Check network connectivity first
+            if not self.check_network_connectivity():
+                if attempt < max_retries - 1:
+                    servicemanager.LogWarningMsg(
+                        f"Network not ready (attempt {attempt + 1}/{max_retries}), waiting..."
+                    )
+                    time.sleep(2)  # Wait 2 seconds for network
+                    continue
+
             if self.send_event("start"):
                 break  # Success, exit retry loop
             else:
                 if attempt < max_retries - 1:
+                    # Exponential backoff: 1s, 2s, 3s, 5s, 5s, ...
+                    retry_delay = min(attempt + 1, 5)
                     servicemanager.LogWarningMsg(
                         f"Failed to send start event (attempt {attempt + 1}/{max_retries}), "
                         f"retrying in {retry_delay} seconds..."
                     )
-                    import time
                     time.sleep(retry_delay)
                 else:
                     servicemanager.LogErrorMsg(
