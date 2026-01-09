@@ -63,10 +63,11 @@ if %errorLevel% neq 0 (
 
 echo.
 echo Configuring service to start automatically...
-sc config L2pControlClient start= delayed-auto
+sc config L2pControlClient start= auto
 if %errorLevel% neq 0 (
-    echo WARNING: Trying regular auto-start instead...
-    sc config L2pControlClient start= auto
+    echo ERROR: Failed to configure service auto-start
+    pause
+    exit /b 1
 )
 
 echo.

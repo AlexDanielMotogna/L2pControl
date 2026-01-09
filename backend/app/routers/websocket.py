@@ -11,8 +11,8 @@ from ..schemas import PCWithSession, SessionBase
 router = APIRouter(tags=["websocket"])
 logger = logging.getLogger(__name__)
 
-# Same threshold as pcs.py
-OFFLINE_THRESHOLD_MINUTES = 1.5
+# Same threshold as pcs.py for consistency
+OFFLINE_THRESHOLD_MINUTES = 0.75
 
 
 def get_pcs_with_sessions(db: DBSession):

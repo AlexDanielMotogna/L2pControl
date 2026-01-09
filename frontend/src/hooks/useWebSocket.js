@@ -52,11 +52,11 @@ export function useWebSocket() {
           clearInterval(ws.pingInterval);
         }
 
-        // Reconnect after 3 seconds
+        // Reconnect after 1 second (faster reconnection)
         reconnectTimeoutRef.current = setTimeout(() => {
           console.log('Reconnecting...');
           connect();
-        }, 3000);
+        }, 1000);
       };
     }
 

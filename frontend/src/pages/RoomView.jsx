@@ -16,6 +16,7 @@ function RoomView() {
     retry: 2, // Retry failed requests 2 times
     refetchOnWindowFocus: false, // Don't refetch on window focus
     refetchOnReconnect: true, // Refetch when network reconnects
+    refetchInterval: 10000,  // Poll every 10 seconds as fallback
   });
 
   if (isLoading) {

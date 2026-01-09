@@ -29,6 +29,7 @@ function Dashboard() {
     retry: 2,
     refetchOnWindowFocus: false,
     refetchOnReconnect: true,
+    refetchInterval: 10000,  // Poll every 10 seconds as fallback
   });
 
   const { data: beverages } = useQuery({

@@ -97,34 +97,34 @@ class L2pControlService(win32serviceutil.ServiceFramework):
 
     def main(self):
         """Main service loop"""
-        # Send start event with retry logic - faster initial retries
+        # Try to send start event immediately - don't wait for network check first
+        # If network is ready, this succeeds instantly
+        # If not, fall back to retry logic with network checks
         max_retries = 15
 
         for attempt in range(max_retries):
-            # Check network connectivity first
-            if not self.check_network_connectivity():
-                if attempt < max_retries - 1:
+            if self.send_event("start"):
+                break  # Success!
+            else:
+                # Failed - now check if it's a network issue
+                if not self.check_network_connectivity():
                     servicemanager.LogWarningMsg(
                         f"Network not ready (attempt {attempt + 1}/{max_retries}), waiting..."
                     )
-                    time.sleep(2)  # Wait 2 seconds for network
-                    continue
-
-            if self.send_event("start"):
-                break  # Success, exit retry loop
-            else:
-                if attempt < max_retries - 1:
-                    # Exponential backoff: 1s, 2s, 3s, 5s, 5s, ...
-                    retry_delay = min(attempt + 1, 5)
-                    servicemanager.LogWarningMsg(
-                        f"Failed to send start event (attempt {attempt + 1}/{max_retries}), "
-                        f"retrying in {retry_delay} seconds..."
-                    )
-                    time.sleep(retry_delay)
+                    time.sleep(2)
                 else:
-                    servicemanager.LogErrorMsg(
-                        f"Failed to send start event after {max_retries} attempts"
-                    )
+                    # Network is up but API failed - use exponential backoff
+                    if attempt < max_retries - 1:
+                        retry_delay = min(attempt + 1, 5)
+                        servicemanager.LogWarningMsg(
+                            f"Failed to send start event (attempt {attempt + 1}/{max_retries}), "
+                            f"retrying in {retry_delay} seconds..."
+                        )
+                        time.sleep(retry_delay)
+                    else:
+                        servicemanager.LogErrorMsg(
+                            f"Failed to send start event after {max_retries} attempts"
+                        )
 
         # Main loop - send heartbeats
         while self.running:

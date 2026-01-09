@@ -29,11 +29,12 @@ echo [2] Stopping service if running...
 sc stop L2pControlClient >nul 2>&1
 timeout /t 2 >nul
 
-echo [3] Configuring delayed auto-start...
-sc config L2pControlClient start= delayed-auto
+echo [3] Configuring auto-start...
+sc config L2pControlClient start= auto
 if %errorLevel% neq 0 (
-    echo WARNING: Trying regular auto-start instead...
-    sc config L2pControlClient start= auto
+    echo ERROR: Failed to configure service auto-start
+    pause
+    exit /b 1
 )
 
 echo [4] Setting service recovery options...
