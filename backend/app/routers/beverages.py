@@ -25,13 +25,14 @@ def create_beverage(beverage: BeverageCreate, db: DBSession = Depends(get_db)):
     db_beverage = Beverage(
         name=beverage.name,
         quantity=beverage.quantity,
+        expectedStock=beverage.expectedStock,
         pricePerUnit=beverage.pricePerUnit
     )
     db.add(db_beverage)
     db.commit()
     db.refresh(db_beverage)
 
-    logger.info(f"Created beverage: {beverage.name} (qty: {beverage.quantity}, price: ${beverage.pricePerUnit})")
+    logger.info(f"Created beverage: {beverage.name} (qty: {beverage.quantity}, expected: {beverage.expectedStock}, price: ${beverage.pricePerUnit})")
     return db_beverage
 
 
