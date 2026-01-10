@@ -212,58 +212,61 @@ function Dashboard() {
                   Beverage
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                  Quantity
+                  Stock (Actual/Expected)
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                   Price/Unit
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                  Total Value
+                  Status
                 </th>
               </tr>
             </thead>
             <tbody className="bg-gray-900/30 divide-y divide-gray-700">
-              {beverages?.map((beverage) => (
-                <tr
-                  key={beverage.id}
-                  className="hover:bg-gray-800/50 transition"
-                >
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="font-medium text-white">
-                      {beverage.name}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`text-sm font-medium ${
-                        beverage.quantity < 5
-                          ? "text-red-400"
-                          : "text-green-400"
-                      }`}
-                    >
-                      {beverage.quantity} units
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                    €{beverage.pricePerUnit.toFixed(2)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
-                    €{(beverage.quantity * beverage.pricePerUnit).toFixed(2)}
-                  </td>
-                </tr>
-              ))}
+              {beverages?.map((beverage) => {
+                const missing = (beverage.expectedStock || 0) - beverage.quantity;
+                const isMissing = missing > 0;
+                return (
+                  <tr
+                    key={beverage.id}
+                    className={`hover:bg-gray-800/50 transition ${isMissing ? 'bg-yellow-500/5' : ''}`}
+                  >
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="font-medium text-white">
+                        {beverage.name}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`text-sm font-medium ${isMissing ? 'text-yellow-400' : 'text-green-400'}`}>
+                        {beverage.quantity} / {beverage.expectedStock || 0}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                      €{beverage.pricePerUnit.toFixed(2)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      {isMissing ? (
+                        <span className="text-yellow-400 font-medium">{missing} missing</span>
+                      ) : (
+                        <span className="text-green-400">OK</span>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
               {beverages?.length > 0 && (
                 <tr className="bg-red-900/20 font-bold">
                   <td className="px-6 py-4 text-white">TOTAL</td>
                   <td className="px-6 py-4 text-green-400">
-                    {beverages.reduce((sum, b) => sum + b.quantity, 0)} units
+                    {beverages.reduce((sum, b) => sum + b.quantity, 0)} / {beverages.reduce((sum, b) => sum + (b.expectedStock || 0), 0)}
                   </td>
                   <td className="px-6 py-4"></td>
-                  <td className="px-6 py-4 text-white text-lg">
-                    €
-                    {beverages
-                      .reduce((sum, b) => sum + b.quantity * b.pricePerUnit, 0)
-                      .toFixed(2)}
+                  <td className="px-6 py-4">
+                    {beverages.reduce((sum, b) => sum + Math.max(0, (b.expectedStock || 0) - b.quantity), 0) > 0 ? (
+                      <span className="text-yellow-400">{beverages.reduce((sum, b) => sum + Math.max(0, (b.expectedStock || 0) - b.quantity), 0)} missing</span>
+                    ) : (
+                      <span className="text-green-400">All OK</span>
+                    )}
                   </td>
                 </tr>
               )}

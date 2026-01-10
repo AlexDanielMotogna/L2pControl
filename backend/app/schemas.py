@@ -68,7 +68,8 @@ class PCWithSession(PCBase):
 class BeverageBase(BaseModel):
     id: int
     name: str
-    quantity: int
+    quantity: int  # Actual counted stock
+    expectedStock: int  # Normal/target stock level
     pricePerUnit: float
     createdAt: datetime
     updatedAt: datetime
@@ -87,11 +88,13 @@ class BeverageBase(BaseModel):
 
 class BeverageCreate(BaseModel):
     name: str
-    quantity: int = 0
+    quantity: int = 0  # Actual counted stock
+    expectedStock: int = 0  # Normal/target stock level
     pricePerUnit: float
 
 
 class BeverageUpdate(BaseModel):
     name: Optional[str] = None
-    quantity: Optional[int] = None
+    quantity: Optional[int] = None  # Actual counted stock
+    expectedStock: Optional[int] = None  # Normal/target stock level
     pricePerUnit: Optional[float] = None
